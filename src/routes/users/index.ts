@@ -6,13 +6,11 @@ import {
   subscribeBodySchema,
 } from './schemas';
 import type { UserEntity } from '../../utils/DB/entities/DBUsers';
+import ErrorMsg from '../types'
 
 const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
   fastify
 ): Promise<void> => {
-  enum ErrorMsg {
-    user_not_found = 'User not found'
-  };
   fastify.get('/', async function (request, reply): Promise<UserEntity[]> {
     return await fastify.db.users.findMany();
   });
