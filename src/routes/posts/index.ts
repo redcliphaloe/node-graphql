@@ -2,7 +2,15 @@ import { FastifyPluginAsyncJsonSchemaToTs } from '@fastify/type-provider-json-sc
 import { idParamSchema } from '../../utils/reusedSchemas';
 import { createPostBodySchema, changePostBodySchema } from './schema';
 import type { PostEntity } from '../../utils/DB/entities/DBPosts';
-import ErrorMsg from '../types';
+
+enum ErrorMsg {
+  post_not_found = 'Post not found'
+};
+
+enum ErrorCode {
+  code_400 = 400,
+  code_404 = 404
+};
 
 const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
   fastify
@@ -23,7 +31,7 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
       if (post) {
         return post;
       }
-      throw new Error(ErrorMsg.post_not_found);
+      throw fastify.httpErrors.createError(ErrorCode.code_404, ErrorMsg.post_not_found);
     }
   );
 
@@ -47,7 +55,11 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
       },
     },
     async function (request, reply): Promise<PostEntity> {
-      return await fastify.db.posts.delete(request.params.id);
+      const post = await fastify.db.posts.findOne({key: 'id', equals: request.params.id});
+      if (post) {
+        return await fastify.db.posts.delete(request.params.id);
+      }
+      throw fastify.httpErrors.createError(ErrorCode.code_400, ErrorMsg.post_not_found);
     }
   );
 
@@ -60,7 +72,11 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
       },
     },
     async function (request, reply): Promise<PostEntity> {
-      return await fastify.db.posts.change(request.params.id, request.body);
+      const post = await fastify.db.posts.findOne({key: 'id', equals: request.params.id});
+      if (post) {
+        return await fastify.db.posts.change(request.params.id, request.body);
+      }
+      throw fastify.httpErrors.createError(ErrorCode.code_400, ErrorMsg.post_not_found);
     }
   );
 };
