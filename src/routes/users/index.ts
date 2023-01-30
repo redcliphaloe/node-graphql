@@ -6,7 +6,7 @@ import {
   subscribeBodySchema,
 } from './schemas';
 import type { UserEntity } from '../../utils/DB/entities/DBUsers';
-import ErrorMsg from '../types'
+import ErrorMsg from '../types';
 
 const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
   fastify
