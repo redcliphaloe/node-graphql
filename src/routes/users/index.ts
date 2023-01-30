@@ -51,7 +51,7 @@ const plugin: FastifyPluginAsyncJsonSchemaToTs = async (
       },
     },
     async function (request, reply): Promise<UserEntity> {
-      return await fastify.db.users.delete(request.params.id)
+      return await fastify.db.users.delete(request.params.id);
     }
   );
 
